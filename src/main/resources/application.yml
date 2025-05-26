@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+openai:
+  api-url: ${OPENAI_API_PATH}
+  api-key: ${OPENAI_API_KEY}
+
+unipass:
+  api-url: ${UNIPASS_API_PATH}
+  api-key: ${UNIPASS_API_KEY}

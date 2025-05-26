@@ -1,0 +1,16 @@
+[
+  {
+    "name": "trackDelivery",
+    "description": "운송장 번호로 배송 상태를 조회합니다.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "tracking_number": {
+          "type": "string",
+          "description": "운송장 번호"
+        }
+      },
+      "required": ["tracking_number"]
+    }
+  }
+]
