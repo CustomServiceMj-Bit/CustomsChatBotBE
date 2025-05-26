@@ -1,13 +1,13 @@
-package com.example.customservicedemo;
+package com.example.customschatbotbe;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CustomServiceDemoApplication {
+public class CustomsChatBotBeApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CustomServiceDemoApplication.class, args);
+        SpringApplication.run(CustomsChatBotBeApplication.class, args);
     }
 
 }
