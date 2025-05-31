@@ -5,11 +5,14 @@ import com.example.customschatbotbe.domain.trackDelivery.openai.OpenAiRequestBui
 import com.example.customschatbotbe.domain.trackDelivery.openai.OpenAiClient;
 import com.example.customschatbotbe.domain.trackDelivery.dto.request.TrackDeliveryRequest;
 import com.example.customschatbotbe.domain.trackDelivery.dto.response.TrackDeliveryResponse;
+import com.example.customschatbotbe.domain.trackDelivery.util.GptResponseParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.OpenAiApiSpec.*;
 
 @Service
 @RequiredArgsConstructor
@@ -21,26 +24,19 @@ public class TrackDeliveryChatService {
         List<Map<String, String>> userMessage = OpenAiRequestBuilder.buildMessages(trackDeliveryRequest.getMessage(), null) ;
 
         Map<String, Object> requestBody = OpenAiRequestBuilder.builder()
-                .model("gpt-3.5-turbo")
+                .model(GPT_3P5_TURBO)
                 .userMessage(userMessage)
-                .toolChoice("auto")
+                .toolChoice(FUNC_AUTO_OPTION)
                 .build();
 
         Map<String, Object> gptResponse = openAiClient.chatCompletion(requestBody);
 
         String reply;
-
-        List<Map<String, Object>> choices = (List<Map<String, Object>>) gptResponse.get("choices");
-        if (choices != null && !choices.isEmpty()) {
-            Map<String, Object> gptMessage = (Map<String, Object>) choices.get(0).get("message");
-
-            if (gptMessage.containsKey("function_call")) {
-                reply = functionCallProcessor.handleFunctionCall(gptMessage, userMessage);
-            } else {
-                reply = (String) gptMessage.get("content");
-            }
+        Map<String, Object> gptMessage = GptResponseParser.extractMessage(gptResponse);
+        if (gptMessage.containsKey(FUNC_KEY)) {
+            reply = functionCallProcessor.handleFunctionCall(gptMessage, userMessage);
         } else {
-            throw new RuntimeException("GPT 응답 파싱 실패");
+            reply = (String) gptMessage.get("content");
         }
 
         return TrackDeliveryResponse.fromChatResponse(reply);

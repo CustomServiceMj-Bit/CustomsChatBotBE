@@ -1,6 +1,7 @@
 package com.example.customschatbotbe.domain.trackDelivery.openai;
 
 
+import com.example.customschatbotbe.domain.trackDelivery.infra.spec.OpenAiApiSpec;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
@@ -12,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.OpenAiApiSpec.SYSTEM_MESSAGE;
+
 /**
  * GPT ChatCompletion 요청을 조립해 주는 헬퍼.
  *  - 함수 스키마 로드·캐시
@@ -20,12 +23,6 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenAiRequestBuilder {
-
-    private static final Map<String, String> SYSTEM_MESSAGE = Map.of(
-            "role", "system",
-            "content", "너는 통관·배송 조회 도우미야. 운송장 번호를 이해하고 응답해줘."
-    );
-
     private static final List<Map<String, Object>> FUNCTION_SCHEMA = loadFunctionSchemaOnce();
 
     private static List<Map<String, Object>> loadFunctionSchemaOnce() {
@@ -65,9 +62,9 @@ public class OpenAiRequestBuilder {
     }
 
     public static class ChatCompletionBodyBuilder {
-        private String model = "gpt-3.5-turbo";
+        private String model = OpenAiApiSpec.GPT_3P5_TURBO;
         private List<Map<String, String>> userMessage;
-        private String toolChoice = "auto";
+        private String toolChoice = OpenAiApiSpec.FUNC_AUTO_OPTION;
 
         public ChatCompletionBodyBuilder model(String model) {
             this.model = model;

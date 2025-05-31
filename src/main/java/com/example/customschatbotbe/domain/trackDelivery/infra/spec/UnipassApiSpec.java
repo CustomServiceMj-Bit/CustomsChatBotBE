@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UnipassApiSpec {
@@ -19,4 +20,6 @@ public class UnipassApiSpec {
             DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     public static final DateTimeFormatter UNIPASS_OUTPUT_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final Pattern CARGO_NO_PATTERN =
+            Pattern.compile("^(?=.*[A-Z])(?=.*\\d)[A-Z0-9]{15}|(?=.*[A-Z])(?=.*\\d)[A-Z0-9]{19}$");
 }

@@ -1,4 +1,4 @@
-package com.example.customschatbotbe.domain.trackDelivery.infra;
+package com.example.customschatbotbe.domain.trackDelivery.util;
 
 import com.example.customschatbotbe.global.ProgressDetail;
 import org.w3c.dom.Document;
@@ -20,18 +20,13 @@ import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.Unipa
 
 public final class UnipassXmlParser {
 
-    public static List<ProgressDetail> parseProgress(String xml) throws Exception {
+    public static Optional<List<ProgressDetail>> parseProgress(String xml) throws Exception {
         // 문자열로 들어온 XML을 파싱해 DOM 트리로 만듦
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
         // process detail 태그 추출
         NodeList nodeList = doc.getElementsByTagName(TAG_PROCESS_DETAIL);
-
-        // 통관 정보가 없는 경우
-        if (nodeList.getLength() == 0) {
-            throw new RuntimeException("통관 진행 상세 정보를 찾을 수 없습니다.");
-        }
 
         List<ProgressDetail> progressList = new ArrayList<>();
 
@@ -62,7 +57,9 @@ public final class UnipassXmlParser {
                 .sorted(Comparator.comparing(ProgressDetail::datetime, Comparator.nullsLast(String::compareTo)))
                 .collect(Collectors.toList());
 
-        return progressList;
+        progressList.sort(Comparator.comparing(ProgressDetail::datetime, Comparator.nullsLast(String::compareTo)));
+
+        return Optional.of(progressList);
     }
 
     private static String getTagValue(String tag, Element element) {
