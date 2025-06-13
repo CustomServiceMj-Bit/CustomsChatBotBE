@@ -3,6 +3,7 @@ name: Deploy Spring Boot App to EC2 via DockerHub
 on:
   push:
     branches: [main]  # main 브랜치에 push가 발생할 때 트리거됨
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
