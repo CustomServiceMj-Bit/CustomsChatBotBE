@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    container_name: customs-chat-bot-be
+    container_name: customs-chatbot
     ports:
       - "8080:8080"
     env_file:
