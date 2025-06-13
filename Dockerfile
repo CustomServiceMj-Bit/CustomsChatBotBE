@@ -1,11 +1,14 @@
-# 베이스 이미지
+# --- 1단계: Build 단계 ---
+FROM gradle:8.5-jdk17-alpine AS builder
+
+WORKDIR /app
+COPY . /app
+RUN gradle build -x test
+
+# --- 2단계: 실행용 이미지 ---
 FROM openjdk:17-jdk-alpine
 
-# 작업 디렉토리 설정
 WORKDIR /app
+COPY --from=builder /app/build/libs/*.jar app.jar
 
-# JAR 복사
-COPY build/libs/*.jar app.jar
-
-# 앱 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]
