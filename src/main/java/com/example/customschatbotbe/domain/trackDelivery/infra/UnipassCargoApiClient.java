@@ -3,20 +3,22 @@ package com.example.customschatbotbe.domain.trackDelivery.infra;
 import com.example.customschatbotbe.domain.trackDelivery.dto.CargoProgressResult;
 import com.example.customschatbotbe.domain.trackDelivery.util.UnipassXmlParser;
 import com.example.customschatbotbe.global.ProgressDetail;
+import com.example.customschatbotbe.global.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.*;
 
 import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.UnipassApiSpec.*;
-import static com.example.customschatbotbe.global.ErrorMessages.*;
+import static com.example.customschatbotbe.global.exception.enums.ErrorCode.*;
 
 @Component
 public class UnipassCargoApiClient {
-
-
-
     @Value("${unipass.api-key}")
     private String apiKey;
 
@@ -28,29 +30,24 @@ public class UnipassCargoApiClient {
     public CargoProgressResult getCargoProgressDetails(String cargoMtNo) {
         cargoMtNo = formatCargoNumber(cargoMtNo);
         if (!isValidCargoNumber(cargoMtNo)) {
-            return errorResult(INVALID_CARGO_NUMBER_MESSAGE);
+            throw new BusinessException(INVALID_CARGO_NUMBER_MESSAGE);
         }
-
         try {
             String url = buildRequestUrl(cargoMtNo);
             String xml = fetchXml(url);
 
             Optional<List<ProgressDetail>> parsed = UnipassXmlParser.parseProgress(xml);
 
-            return parsed.map(this::successResult)
-                    .orElseGet(() -> errorResult(NO_PROGRESS_INFO_MESSAGE));
-        } catch (RuntimeException e) {
-            return errorResult(FETCH_ERROR_MESSAGE);
-        } catch (Exception e) {
-            return errorResult(PROCESSING_ERROR_MESSAGE);
+            if (parsed.isPresent()) {
+                return successResult(parsed.get());
+            } else {
+                throw new BusinessException(NO_PROGRESS_INFO_MESSAGE);
+            }
+        } catch (ParserConfigurationException | SAXException | IOException e){
+            throw new BusinessException(FETCH_ERROR_MESSAGE);
         }
     }
-    private CargoProgressResult errorResult(String reason) {
-        return CargoProgressResult.builder()
-                .success(false)
-                .errorReason(reason)
-                .build();
-    }
+
     private CargoProgressResult successResult(List<ProgressDetail> details) {
         return CargoProgressResult.builder()
                 .success(true)
@@ -75,7 +72,7 @@ public class UnipassCargoApiClient {
                     .bodyToMono(String.class)
                     .block();
         } catch (Exception e) {
-            throw new RuntimeException("외부 API 요청 중 오류 발생: " + e.getMessage(), e);
+            throw new BusinessException(FETCH_ERROR_MESSAGE);
         }
     }
     private String formatCargoNumber(String cargoMtNo) {

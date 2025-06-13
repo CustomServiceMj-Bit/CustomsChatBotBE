@@ -3,6 +3,7 @@ package com.example.customschatbotbe.domain.trackDelivery.openai;
 import com.example.customschatbotbe.domain.trackDelivery.dto.CargoProgressResult;
 import com.example.customschatbotbe.domain.trackDelivery.infra.UnipassCargoApiClient;
 import com.example.customschatbotbe.domain.trackDelivery.util.GptResponseParser;
+import com.example.customschatbotbe.global.exception.BusinessException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.*;
 
 import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.OpenAiApiSpec.FUNC_KEY;
 import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.OpenAiApiSpec.GPT_3P5_TURBO;
+import static com.example.customschatbotbe.global.exception.enums.ErrorCode.FETCH_ERROR_MESSAGE;
 
 /**
  * GPT가 요청한 펑션콜링을 처리하고 반환값으로 다시 응답을 받아오는 역할
@@ -44,7 +46,7 @@ public class FunctionCallProcessor {
             List<Map<String, String>> secondMessages = new ArrayList<>(initialMessages);
             secondMessages.add(functionMsg);
 
-            Map<String, Object> requestBody = OpenAiRequestBuilder.builder()
+            Map<String, Object> requestBody = GptMessageFactory.builder()
                     .model(GPT_3P5_TURBO)
                     .userMessage(secondMessages)
                     .build();
@@ -53,7 +55,7 @@ public class FunctionCallProcessor {
             Map<String, Object> finalGptMessage = GptResponseParser.extractMessage(gptResponse);
             return (String) finalGptMessage.get("content");
         } catch (Exception e) {
-            throw new RuntimeException("함수 실행 중 오류");
+            throw new BusinessException(FETCH_ERROR_MESSAGE);
         }
     }
 }

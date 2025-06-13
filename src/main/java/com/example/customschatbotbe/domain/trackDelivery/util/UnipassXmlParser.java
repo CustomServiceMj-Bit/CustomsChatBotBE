@@ -5,10 +5,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,7 +23,8 @@ import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.Unipa
 
 public final class UnipassXmlParser {
 
-    public static Optional<List<ProgressDetail>> parseProgress(String xml) throws Exception {
+    public static Optional<List<ProgressDetail>> parseProgress(String xml)
+            throws ParserConfigurationException, SAXException, IOException {
         // 문자열로 들어온 XML을 파싱해 DOM 트리로 만듦
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();

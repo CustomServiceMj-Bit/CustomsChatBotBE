@@ -1,7 +1,7 @@
 package com.example.customschatbotbe.domain.trackDelivery.service;
 
 import com.example.customschatbotbe.domain.trackDelivery.openai.FunctionCallProcessor;
-import com.example.customschatbotbe.domain.trackDelivery.openai.OpenAiRequestBuilder;
+import com.example.customschatbotbe.domain.trackDelivery.openai.GptMessageFactory;
 import com.example.customschatbotbe.domain.trackDelivery.openai.OpenAiClient;
 import com.example.customschatbotbe.domain.trackDelivery.dto.request.TrackDeliveryRequest;
 import com.example.customschatbotbe.domain.trackDelivery.dto.response.TrackDeliveryResponse;
@@ -21,9 +21,9 @@ public class TrackDeliveryChatService {
     private final FunctionCallProcessor functionCallProcessor;
 
     public TrackDeliveryResponse askToGpt(TrackDeliveryRequest trackDeliveryRequest){
-        List<Map<String, String>> userMessage = OpenAiRequestBuilder.buildMessages(trackDeliveryRequest.getMessage(), null) ;
+        List<Map<String, String>> userMessage = GptMessageFactory.buildMessages(trackDeliveryRequest.getMessage(), null) ;
 
-        Map<String, Object> requestBody = OpenAiRequestBuilder.builder()
+        Map<String, Object> requestBody = GptMessageFactory.builder()
                 .model(GPT_3P5_TURBO)
                 .userMessage(userMessage)
                 .toolChoice(FUNC_AUTO_OPTION)

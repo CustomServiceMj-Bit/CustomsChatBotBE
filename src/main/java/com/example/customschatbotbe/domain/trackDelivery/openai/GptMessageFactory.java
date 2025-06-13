@@ -2,6 +2,7 @@ package com.example.customschatbotbe.domain.trackDelivery.openai;
 
 
 import com.example.customschatbotbe.domain.trackDelivery.infra.spec.OpenAiApiSpec;
+import com.example.customschatbotbe.global.exception.BusinessException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.OpenAiApiSpec.SYSTEM_MESSAGE;
+import static com.example.customschatbotbe.global.exception.enums.ErrorCode.FETCH_ERROR_MESSAGE;
 
 /**
  * GPT ChatCompletion 요청을 조립해 주는 헬퍼.
@@ -22,18 +24,19 @@ import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.OpenA
  *  - 요청 바디(Map)까지 완성
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class OpenAiRequestBuilder {
+public class GptMessageFactory {
+    private static final String FUNCTION_SCHEMA_PATH = "functions.json";
     private static final List<Map<String, Object>> FUNCTION_SCHEMA = loadFunctionSchemaOnce();
 
     private static List<Map<String, Object>> loadFunctionSchemaOnce() {
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(
-                    new ClassPathResource("functions.json").getInputStream(),
+                    new ClassPathResource(FUNCTION_SCHEMA_PATH).getInputStream(),
                     new TypeReference<>() {}
             );
         } catch (Exception e) {
-            throw new IllegalStateException("functions.json 로드 실패", e);
+            throw new BusinessException(FETCH_ERROR_MESSAGE);
         }
     }
 
