@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    container_name: customs-chat-bot-be
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
