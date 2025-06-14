@@ -24,11 +24,13 @@ repositories {
 }
 
 dependencies {
-
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // health check
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'

@@ -8,3 +8,9 @@ openai:
 unipass:
   api-url: ${UNIPASS_API_PATH}
   api-key: ${UNIPASS_API_KEY}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
