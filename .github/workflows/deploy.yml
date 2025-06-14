@@ -43,5 +43,5 @@ jobs:
             docker rm customs-chatbot || true
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/customs-chatbot:latest
             docker run -d --name customs-chatbot -p 8080:8080 \
-              --env-file /home/ec2-user/customsChatBotBE/.env \
+              --env-file /home/ec2-user/CustomsChatBotBE/.env \
               ${{ secrets.DOCKERHUB_USERNAME }}/customs-chatbot:latest
