@@ -39,9 +39,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker stop customs-chatbot || true
-            docker rm customs-chatbot || true
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/customs-chatbot:latest
-            docker run -d --name customs-chatbot -p 8080:8080 \
-              --env-file /home/ec2-user/CustomsChatBotBE/.env \
-              ${{ secrets.DOCKERHUB_USERNAME }}/customs-chatbot:latest
+            cd ~/CustomsChatBotBE
+            git pull origin main
+            chmod +x deploy.sh
+            ./deploy.sh
