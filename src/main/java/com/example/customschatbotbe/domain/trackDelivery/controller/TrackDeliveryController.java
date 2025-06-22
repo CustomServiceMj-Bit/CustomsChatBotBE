@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.example.customschatbotbe.global.exception.enums.SuccessCode.SUCCESS;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("api/chat")
 @RequiredArgsConstructor
 public class TrackDeliveryController {
     private final TrackDeliveryChatService trackDeliveryChatService;

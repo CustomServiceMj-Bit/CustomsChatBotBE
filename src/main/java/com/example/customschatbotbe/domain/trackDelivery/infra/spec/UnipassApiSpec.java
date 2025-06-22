@@ -14,6 +14,9 @@ public class UnipassApiSpec {
     public static final String TAG_PROCESS_COMMENT = "rlbrCn";
     public static final String PARAM_API_KEY = "crkyCn";
     public static final String PARAM_CARGO_NO = "cargMtNo";
+    public static final String PARAM_HBL_NO = "hblNo";
+    public static final String PARAM_MBL_NO = "mblNo";
+    public static final String PARAM_BL_YEAR = "blYy";
     public static final String NA = "N/A";
 
     public static final DateTimeFormatter UNIPASS_INPUT_FORMATTER =

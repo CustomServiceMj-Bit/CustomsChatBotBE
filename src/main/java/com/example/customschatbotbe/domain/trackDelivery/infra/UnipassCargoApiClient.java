@@ -33,18 +33,44 @@ public class UnipassCargoApiClient {
             throw new BusinessException(INVALID_CARGO_NUMBER_MESSAGE);
         }
         try {
-            String url = buildRequestUrl(cargoMtNo);
-            String xml = fetchXml(url);
-
-            Optional<List<ProgressDetail>> parsed = UnipassXmlParser.parseProgress(xml);
-
-            if (parsed.isPresent()) {
-                return successResult(parsed.get());
-            } else {
-                throw new BusinessException(NO_PROGRESS_INFO_MESSAGE);
-            }
+            Map<String, String> queryParams = new HashMap<>();
+            queryParams.put(PARAM_CARGO_NO, cargoMtNo);
+            return getCargoProgressResult(queryParams);
         } catch (ParserConfigurationException | SAXException | IOException e){
             throw new BusinessException(FETCH_ERROR_MESSAGE);
+        }
+    }
+
+    public CargoProgressResult getCargoProgressDetails(String hBlNo, String mBlNo, String year){
+        System.out.println(hBlNo+" "+mBlNo+" "+year);
+        if(hBlNo.equals("") || mBlNo.equals("") || year.equals("")){
+            return CargoProgressResult.builder()
+                    .success(false)
+                    .errorReason("통관 조회를 위해 BL 번호, 연도, 세관 코드를 모두 입력해주세요.")
+                    .build();
+        }
+        // 유효성 조회 메서드 넣기
+        try {
+            Map<String, String> queryParams = new HashMap<>();
+            queryParams.put(PARAM_HBL_NO, hBlNo);
+            queryParams.put(PARAM_MBL_NO, mBlNo);
+            queryParams.put(PARAM_BL_YEAR, year);
+            return getCargoProgressResult(queryParams);
+        } catch (ParserConfigurationException | SAXException | IOException e){
+            throw new BusinessException(FETCH_ERROR_MESSAGE);
+        }
+    }
+
+    private CargoProgressResult getCargoProgressResult(Map<String, String> queryParams) throws ParserConfigurationException, SAXException, IOException {
+        String url = buildRequestUrl(queryParams);
+        String xml = fetchXml(url);
+
+        Optional<List<ProgressDetail>> parsed = UnipassXmlParser.parseProgress(xml);
+
+        if (parsed.isPresent()) {
+            return successResult(parsed.get());
+        } else {
+            throw new BusinessException(NO_PROGRESS_INFO_MESSAGE);
         }
     }
 
@@ -57,12 +83,14 @@ public class UnipassCargoApiClient {
     private boolean isValidCargoNumber(String cargoMtNo) {
         return CARGO_NO_PATTERN.matcher(cargoMtNo).matches();
     }
-    private String buildRequestUrl(String cargoMtNo) {
-        return UriComponentsBuilder.fromUriString(apiUrl)
-                .queryParam(PARAM_API_KEY, apiKey)
-                .queryParam(PARAM_CARGO_NO, cargoMtNo)
-                .build()
-                .toUriString();
+    private String buildRequestUrl(Map<String, String> queryParams) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(apiUrl)
+                .queryParam(PARAM_API_KEY, apiKey);
+        for (Map.Entry<String, String> entry : queryParams.entrySet()){
+            builder.queryParam(entry.getKey(), entry.getValue());
+        }
+
+        return builder.build().toUriString();
     }
     private String fetchXml(String url) {
         try {

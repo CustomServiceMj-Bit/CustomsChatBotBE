@@ -34,9 +34,26 @@ public class FunctionCallProcessor {
             String functionName = (String) functionCall.get("name");
             String arguments = (String) functionCall.get("arguments");
             Map<String, String> args = mapper.readValue(arguments, new TypeReference<>() {});
-            String trackingNo = args.get("tracking_number");
-
-            CargoProgressResult result = unipassCargoApiClient.getCargoProgressDetails(trackingNo);
+            CargoProgressResult result;
+            System.out.println(functionName);
+            switch (functionName) {
+                case "trackByCargoMtNo" -> {
+                    String trackingNo = args.get("cargoMtNo");
+                    result = unipassCargoApiClient.getCargoProgressDetails(trackingNo);
+                }
+                case "trackByBlInfo" -> {
+                    String hblNo = args.get("hBlNo");
+                    String mblNo = args.get("mBlNo");
+                    String year = args.get("year");
+                    result = unipassCargoApiClient.getCargoProgressDetails(hblNo, mblNo, year);
+                }
+                default -> {
+                    result = CargoProgressResult.builder()
+                            .success(false)
+                            .errorReason("리팩토링해라")
+                            .build();
+                }
+            }
 
             Map<String, String> functionMsg = new HashMap<>();
             functionMsg.put("role", "function");
