@@ -47,7 +47,7 @@ jobs:
             --region ap-northeast-2 \
             --comment "Deploy customs-chatbot" \
             --parameters 'commands=[
-              "cd ~/CustomsChatBotBE",
+              "cd /home/ubuntu/CustomsChatBotBE",
               "git pull origin main",
               "chmod +x deploy.sh",
               "./deploy.sh"
