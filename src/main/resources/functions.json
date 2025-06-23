@@ -7,7 +7,7 @@
       "properties": {
         "cargoMtNo": {
           "type": "string",
-          "description": "화물관리번호 (하이픈 제외 15자리 또는 19자리)"
+          "description": "화물관리번호"
         }
       },
       "required": ["cargoMtNo"]
@@ -21,11 +21,11 @@
       "properties": {
         "hBlNo": {
           "type": "string",
-          "description": "House B/L 번호 (보통 10~11자리)"
+          "description": "House B/L 번호"
         },
         "mBlNo": {
           "type": "string",
-          "description": "Master B/L 번호 (보통 10~11자리)"
+          "description": "Master B/L 번호"
         },
         "year": {
           "type": "string",
