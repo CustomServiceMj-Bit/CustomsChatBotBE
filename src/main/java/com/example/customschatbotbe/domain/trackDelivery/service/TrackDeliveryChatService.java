@@ -34,7 +34,7 @@ public class TrackDeliveryChatService {
 
         Map<String, Object> gptMessage = GptResponseParser.extractMessage(gptResponse);
         if (gptMessage.containsKey(FUNC_KEY)) {
-            CargoProgressResult cargoProgressResult = functionCallProcessor.handleFunctionCall(gptMessage, userMessage);
+            CargoProgressResult cargoProgressResult = functionCallProcessor.handleFunctionCall(gptMessage);
             return TrackDeliveryResponse.fromCargoProgressResult(cargoProgressResult);
         } else {
             String reply = (String) gptMessage.get("content");

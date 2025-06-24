@@ -2,8 +2,6 @@ package com.example.customschatbotbe.domain.trackDelivery.openai;
 
 import com.example.customschatbotbe.domain.trackDelivery.dto.CargoProgressResult;
 import com.example.customschatbotbe.domain.trackDelivery.infra.UnipassCargoApiClient;
-import com.example.customschatbotbe.domain.trackDelivery.util.GptResponseParser;
-import com.example.customschatbotbe.global.exception.BusinessException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.OpenAiApiSpec.FUNC_KEY;
-import static com.example.customschatbotbe.domain.trackDelivery.infra.spec.OpenAiApiSpec.GPT_3P5_TURBO;
 import static com.example.customschatbotbe.global.exception.enums.ErrorCode.FETCH_ERROR_MESSAGE;
 
 /**
@@ -23,11 +20,9 @@ import static com.example.customschatbotbe.global.exception.enums.ErrorCode.FETC
 @RequiredArgsConstructor
 @Component
 public class FunctionCallProcessor {
-    private final OpenAiClient openAiClient;
     private final UnipassCargoApiClient unipassCargoApiClient;
 
-    public CargoProgressResult handleFunctionCall(Map<String, Object> gptMessage,
-                                      List<Map<String, String>> initialMessages) {
+    public CargoProgressResult handleFunctionCall(Map<String, Object> gptMessage) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             Map<String, Object> functionCall = (Map<String, Object>) gptMessage.get(FUNC_KEY);
@@ -47,33 +42,17 @@ public class FunctionCallProcessor {
                     String year = args.get("year");
                     result = unipassCargoApiClient.getCargoProgressDetails(hblNo, mblNo, year);
                 }
-                default -> {
-                    result = CargoProgressResult.builder()
-                            .success(false)
-                            .errorReason("리팩토링해라")
-                            .build();
-                }
+                default -> result = CargoProgressResult.builder()
+                        .success(false)
+                        .errorReason(FETCH_ERROR_MESSAGE.getMessage())
+                        .build();
             }
-
-//            Map<String, String> functionMsg = new HashMap<>();
-//            functionMsg.put("role", "function");
-//            functionMsg.put("name", functionName);
-//            functionMsg.put("content", mapper.writeValueAsString(result));
-//
-//            List<Map<String, String>> secondMessages = new ArrayList<>(initialMessages);
-//            secondMessages.add(functionMsg);
-//
-//            Map<String, Object> requestBody = GptMessageFactory.builder()
-//                    .model(GPT_3P5_TURBO)
-//                    .userMessage(secondMessages)
-//                    .build();
-//
-//            Map<String, Object> gptResponse = openAiClient.chatCompletion(requestBody);
-//            Map<String, Object> finalGptMessage = GptResponseParser.extractMessage(gptResponse);
-//            return (String) finalGptMessage.get("content");
             return result;
         } catch (Exception e) {
-            throw new BusinessException(FETCH_ERROR_MESSAGE);
+            return CargoProgressResult.builder()
+                    .success(false)
+                    .errorReason(FETCH_ERROR_MESSAGE.getMessage())
+                    .build();
         }
     }
 }

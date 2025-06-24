@@ -3,7 +3,6 @@ package com.example.customschatbotbe.domain.trackDelivery.infra;
 import com.example.customschatbotbe.domain.trackDelivery.dto.CargoProgressResult;
 import com.example.customschatbotbe.domain.trackDelivery.util.UnipassXmlParser;
 import com.example.customschatbotbe.global.ProgressDetail;
-import com.example.customschatbotbe.global.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -30,19 +29,14 @@ public class UnipassCargoApiClient {
     public CargoProgressResult getCargoProgressDetails(String cargoMtNo) {
         cargoMtNo = formatCargoNumber(cargoMtNo);
         if (!isValidCargoNumber(cargoMtNo)) {
-//            throw new BusinessException(INVALID_CARGO_NUMBER_MESSAGE);
             return CargoProgressResult.builder()
                     .success(false)
                     .errorReason(INVALID_CARGO_NUMBER_MESSAGE.getMessage())
                     .build();
         }
-        try {
-            Map<String, String> queryParams = new HashMap<>();
-            queryParams.put(PARAM_CARGO_NO, cargoMtNo);
-            return getCargoProgressResult(queryParams);
-        } catch (ParserConfigurationException | SAXException | IOException e){
-            throw new BusinessException(FETCH_ERROR_MESSAGE);
-        }
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put(PARAM_CARGO_NO, cargoMtNo);
+        return getCargoProgressResult(queryParams);
     }
 
     public CargoProgressResult getCargoProgressDetails(String hBlNo, String mBlNo, String year){
@@ -53,28 +47,39 @@ public class UnipassCargoApiClient {
                     .errorReason("통관 조회를 위해 BL 번호, 연도, 세관 코드를 모두 입력해주세요.")
                     .build();
         }
-        // 유효성 조회 메서드 넣기
-        try {
-            Map<String, String> queryParams = new HashMap<>();
-            queryParams.put(PARAM_HBL_NO, hBlNo);
-            queryParams.put(PARAM_MBL_NO, mBlNo);
-            queryParams.put(PARAM_BL_YEAR, year);
-            return getCargoProgressResult(queryParams);
-        } catch (ParserConfigurationException | SAXException | IOException e){
-            throw new BusinessException(FETCH_ERROR_MESSAGE);
+
+        if(true){
+            // 유효성 조회 메서드 넣기
         }
+
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put(PARAM_HBL_NO, hBlNo);
+        queryParams.put(PARAM_MBL_NO, mBlNo);
+        queryParams.put(PARAM_BL_YEAR, year);
+        return getCargoProgressResult(queryParams);
     }
 
-    private CargoProgressResult getCargoProgressResult(Map<String, String> queryParams) throws ParserConfigurationException, SAXException, IOException {
+    private CargoProgressResult getCargoProgressResult(Map<String, String> queryParams) {
         String url = buildRequestUrl(queryParams);
         String xml = fetchXml(url);
 
-        Optional<List<ProgressDetail>> parsed = UnipassXmlParser.parseProgress(xml);
+        Optional<List<ProgressDetail>> parsed;
+        try {
+            parsed = UnipassXmlParser.parseProgress(xml);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            return CargoProgressResult.builder()
+                    .success(false)
+                    .errorReason(FETCH_ERROR_MESSAGE.getMessage())
+                    .build();
+        }
 
-        if (parsed.isPresent()) {
+        if (parsed.isPresent() && !parsed.get().isEmpty()) {
             return successResult(parsed.get());
         } else {
-            throw new BusinessException(NO_PROGRESS_INFO_MESSAGE);
+            return CargoProgressResult.builder()
+                    .success(false)
+                    .errorReason(NO_PROGRESS_INFO_MESSAGE.getMessage())
+                    .build();
         }
     }
 
@@ -97,15 +102,11 @@ public class UnipassCargoApiClient {
         return builder.build().toUriString();
     }
     private String fetchXml(String url) {
-        try {
-            return webClient.get()
-                    .uri(url)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-        } catch (Exception e) {
-            throw new BusinessException(FETCH_ERROR_MESSAGE);
-        }
+        return webClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
     }
     private String formatCargoNumber(String cargoMtNo) {
         return cargoMtNo.replace("-", "").toUpperCase();
