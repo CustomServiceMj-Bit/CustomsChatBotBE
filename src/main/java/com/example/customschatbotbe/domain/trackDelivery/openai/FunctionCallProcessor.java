@@ -26,7 +26,7 @@ public class FunctionCallProcessor {
     private final OpenAiClient openAiClient;
     private final UnipassCargoApiClient unipassCargoApiClient;
 
-    public String handleFunctionCall(Map<String, Object> gptMessage,
+    public CargoProgressResult handleFunctionCall(Map<String, Object> gptMessage,
                                       List<Map<String, String>> initialMessages) {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -55,22 +55,23 @@ public class FunctionCallProcessor {
                 }
             }
 
-            Map<String, String> functionMsg = new HashMap<>();
-            functionMsg.put("role", "function");
-            functionMsg.put("name", functionName);
-            functionMsg.put("content", mapper.writeValueAsString(result));
-
-            List<Map<String, String>> secondMessages = new ArrayList<>(initialMessages);
-            secondMessages.add(functionMsg);
-
-            Map<String, Object> requestBody = GptMessageFactory.builder()
-                    .model(GPT_3P5_TURBO)
-                    .userMessage(secondMessages)
-                    .build();
-
-            Map<String, Object> gptResponse = openAiClient.chatCompletion(requestBody);
-            Map<String, Object> finalGptMessage = GptResponseParser.extractMessage(gptResponse);
-            return (String) finalGptMessage.get("content");
+//            Map<String, String> functionMsg = new HashMap<>();
+//            functionMsg.put("role", "function");
+//            functionMsg.put("name", functionName);
+//            functionMsg.put("content", mapper.writeValueAsString(result));
+//
+//            List<Map<String, String>> secondMessages = new ArrayList<>(initialMessages);
+//            secondMessages.add(functionMsg);
+//
+//            Map<String, Object> requestBody = GptMessageFactory.builder()
+//                    .model(GPT_3P5_TURBO)
+//                    .userMessage(secondMessages)
+//                    .build();
+//
+//            Map<String, Object> gptResponse = openAiClient.chatCompletion(requestBody);
+//            Map<String, Object> finalGptMessage = GptResponseParser.extractMessage(gptResponse);
+//            return (String) finalGptMessage.get("content");
+            return result;
         } catch (Exception e) {
             throw new BusinessException(FETCH_ERROR_MESSAGE);
         }

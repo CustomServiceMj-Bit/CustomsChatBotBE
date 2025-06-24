@@ -30,7 +30,11 @@ public class UnipassCargoApiClient {
     public CargoProgressResult getCargoProgressDetails(String cargoMtNo) {
         cargoMtNo = formatCargoNumber(cargoMtNo);
         if (!isValidCargoNumber(cargoMtNo)) {
-            throw new BusinessException(INVALID_CARGO_NUMBER_MESSAGE);
+//            throw new BusinessException(INVALID_CARGO_NUMBER_MESSAGE);
+            return CargoProgressResult.builder()
+                    .success(false)
+                    .errorReason(INVALID_CARGO_NUMBER_MESSAGE.getMessage())
+                    .build();
         }
         try {
             Map<String, String> queryParams = new HashMap<>();

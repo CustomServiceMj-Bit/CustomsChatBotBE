@@ -1,5 +1,6 @@
 package com.example.customschatbotbe.domain.trackDelivery.service;
 
+import com.example.customschatbotbe.domain.trackDelivery.dto.CargoProgressResult;
 import com.example.customschatbotbe.domain.trackDelivery.openai.FunctionCallProcessor;
 import com.example.customschatbotbe.domain.trackDelivery.openai.GptMessageFactory;
 import com.example.customschatbotbe.domain.trackDelivery.openai.OpenAiClient;
@@ -31,14 +32,13 @@ public class TrackDeliveryChatService {
 
         Map<String, Object> gptResponse = openAiClient.chatCompletion(requestBody);
 
-        String reply;
         Map<String, Object> gptMessage = GptResponseParser.extractMessage(gptResponse);
         if (gptMessage.containsKey(FUNC_KEY)) {
-            reply = functionCallProcessor.handleFunctionCall(gptMessage, userMessage);
+            CargoProgressResult cargoProgressResult = functionCallProcessor.handleFunctionCall(gptMessage, userMessage);
+            return TrackDeliveryResponse.fromCargoProgressResult(cargoProgressResult);
         } else {
-            reply = (String) gptMessage.get("content");
+            String reply = (String) gptMessage.get("content");
+            return TrackDeliveryResponse.fromChatResponse(reply);
         }
-
-        return TrackDeliveryResponse.fromChatResponse(reply);
     }
 }
