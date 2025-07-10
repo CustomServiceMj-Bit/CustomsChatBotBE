@@ -1,8 +1,8 @@
 package com.example.customschatbotbe.domain.chatbot.controller;
 
 import com.example.customschatbotbe.domain.chatbot.service.ChatBotService;
-import com.example.customschatbotbe.domain.dto.request.ChatRequest;
-import com.example.customschatbotbe.domain.dto.response.ChatResponse;
+import com.example.customschatbotbe.domain.chatbot.dto.request.ChatRequest;
+import com.example.customschatbotbe.domain.chatbot.dto.response.ChatResponse;
 import com.example.customschatbotbe.global.exception.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

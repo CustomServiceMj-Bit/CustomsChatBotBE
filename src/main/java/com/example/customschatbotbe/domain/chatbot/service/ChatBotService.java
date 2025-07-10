@@ -1,7 +1,7 @@
 package com.example.customschatbotbe.domain.chatbot.service;
 
-import com.example.customschatbotbe.domain.dto.request.ChatRequest;
-import com.example.customschatbotbe.domain.dto.response.ChatResponse;
+import com.example.customschatbotbe.domain.chatbot.dto.request.ChatRequest;
+import com.example.customschatbotbe.domain.chatbot.dto.response.ChatResponse;
 import com.example.customschatbotbe.global.exception.BusinessException;
 import com.example.customschatbotbe.global.exception.enums.ErrorCode;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.customschatbotbe.domain.dto.request;
+package com.example.customschatbotbe.domain.chatbot.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

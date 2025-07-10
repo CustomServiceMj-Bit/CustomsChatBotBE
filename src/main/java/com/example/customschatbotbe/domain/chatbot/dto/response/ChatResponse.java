@@ -1,4 +1,4 @@
-package com.example.customschatbotbe.domain.dto.response;
+package com.example.customschatbotbe.domain.chatbot.dto.response;
 
 import com.example.customschatbotbe.global.ProgressDetail;
 import lombok.Builder;
