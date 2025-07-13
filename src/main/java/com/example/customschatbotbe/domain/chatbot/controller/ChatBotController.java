@@ -22,7 +22,6 @@ public class ChatBotController {
 
     @PostMapping
     public Mono<ResponseEntity<ApiResponse<ChatResponse>>> chat(@RequestBody ChatRequest chatRequest) {
-        System.out.println("debug");
         return chatBotService.generateReply(chatRequest)
                 .map(chatResponse -> ResponseEntity.ok(ApiResponse.success(SUCCESS, chatResponse)));
     }
