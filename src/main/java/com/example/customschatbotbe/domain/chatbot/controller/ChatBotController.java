@@ -24,6 +24,7 @@ public class ChatBotController {
     @PostMapping
     public Mono<ResponseEntity<ApiResponse<ChatResponse>>> chat(@RequestBody ChatRequest chatRequest, HttpServletRequest httpServletRequest) {
         String sessionId = httpServletRequest.getSession().getId();
+        System.out.println("sessionId: "+sessionId);
         return chatBotService.generateReply(chatRequest, sessionId)
                 .map(chatResponse -> ResponseEntity.ok(ApiResponse.success(SUCCESS, chatResponse)));
     }
