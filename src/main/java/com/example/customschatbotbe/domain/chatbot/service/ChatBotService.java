@@ -1,6 +1,5 @@
 package com.example.customschatbotbe.domain.chatbot.service;
 
-import com.example.customschatbotbe.domain.chatbot.dto.request.AiChatRequest;
 import com.example.customschatbotbe.domain.chatbot.dto.request.ChatRequest;
 import com.example.customschatbotbe.domain.chatbot.dto.response.ChatResponse;
 import com.example.customschatbotbe.global.exception.BusinessException;
@@ -14,15 +13,11 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ChatBotService {
     private final WebClient webClient;
-
-    public Mono<ChatResponse> generateReply(ChatRequest chatRequest, String sessionId){
+    public Mono<ChatResponse> generateReply(ChatRequest chatRequest){
         try {
             return webClient.post()
                     .uri("/predict")
-                    .bodyValue(AiChatRequest.builder()
-                            .message(chatRequest.getMessage())
-                            .sessionId(sessionId)
-                            .build())
+                    .bodyValue(chatRequest)
                     .retrieve()
                     .bodyToMono(ChatResponse.class);
         } catch (Exception e) {
